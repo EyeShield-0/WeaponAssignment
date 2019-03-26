@@ -14,18 +14,18 @@ namespace WeaponShopAssign2
         }
 
         // CODE FOR ADDING WEAPON TO THE SHOP STARTS HERE
-        public void addWeapon(string name, int range, int damage, double weight, double cost)
+        public void addWeapon(string name, int range, int damage, double weight, double cost, int quantity)
         {
-            Weapon newWeapon = new Weapon(name, range, damage, weight, cost);
+            Weapon newWeapon = new Weapon(name, range, damage, weight, cost, quantity);
             root = insertWorker(root, newWeapon);
         }
 
         private BSTNode insertWorker(BSTNode curr, Weapon newWeapon)
         {
             if (curr == null) return new BSTNode(newWeapon);
-            if (string.Compare(newWeapon.name.ToLower(), curr.weapon.name.ToLower()) < 0) curr.weaponLeft = insertWorker(curr.weaponLeft, newWeapon);
-            if (string.Compare(newWeapon.name.ToLower(), curr.weapon.name.ToLower()) > 0) curr.weaponRight = insertWorker(curr.weaponRight, newWeapon);
-            if (string.Compare(newWeapon.name.ToLower(), curr.weapon.name.ToLower()) == 0) curr.quantity++;
+            if (string.Compare(newWeapon.name, curr.weapon.name) < 0) curr.weaponLeft = insertWorker(curr.weaponLeft, newWeapon);
+            if (string.Compare(newWeapon.name, curr.weapon.name) > 0) curr.weaponRight = insertWorker(curr.weaponRight, newWeapon);
+            if (string.Compare(newWeapon.name, curr.weapon.name) == 0) curr.weapon.quantity += newWeapon.quantity;
             return curr;
         }
 
@@ -41,7 +41,10 @@ namespace WeaponShopAssign2
         {
             if (curr == null) return;
             inOrderTrav(curr.weaponLeft);
-            Console.Write("Weapon Name: {0} \tPrice:{1} \tQuantity:{2}\n", curr.weapon.name, curr.weapon.cost, curr.quantity);
+            if (curr.weapon.quantity > 0)
+            {
+                Console.Write("Weapon Name: {0} \tPrice:{1} \tQuantity:{2}\n", curr.weapon.name, curr.weapon.cost, curr.weapon.quantity);
+            }
             inOrderTrav(curr.weaponRight);
         }
 
@@ -55,64 +58,53 @@ namespace WeaponShopAssign2
         private BSTNode searchWorker(BSTNode curr, string name)
         {
             if (curr == null) return null;
-            if (curr.weapon.name.ToLower() == name.ToLower()) return curr;
-            if (string.Compare(name.ToLower(), curr.weapon.name.ToLower()) < 0) curr.weaponLeft = searchWorker(curr.weaponLeft, name);
-            return searchWorker(curr.weaponRight, name);
+            if (curr.weapon.name == name) return curr;
+            if (string.Compare(name, curr.weapon.name) < 0) return searchWorker(curr.weaponLeft, name);
+            else {return  searchWorker(curr.weaponRight, name); }
         }
 
 
-        // CODE FOR DELETING ITEM FROM THE SHOP (INCOMPLETE)
-        public void delete(string name)
+        // CODE FOR DELETE
+
+        public void deleteWeapon(string name)
         {
-            BSTNode key = search(name);
-            if(key != null)
+            BSTNode w = search(name);
+            if(w != null)
             {
-                deleteHelper(root, key);
+                root = deleteHelper(root, w.weapon);
+                Console.WriteLine("\nSuccessfully deleted {0} from the shop!\n", w.weapon.name);
             }
             else
             {
-                Console.WriteLine("\nThat weapon does not exist!\n");
+                Console.WriteLine("\nWeapon does not exist on this shop\n");
             }
+
         }
 
-        private BSTNode deleteHelper(BSTNode curr, BSTNode key)
+        private BSTNode deleteHelper(BSTNode curr, Weapon key)
         {
-            if (curr == null) return curr;
+            if (curr == null) return null;
 
-            if (string.Compare(key.weapon.name.ToLower(), curr.weapon.name.ToLower()) < 0)
+            if (key.name.CompareTo(curr.weapon.name) < 0) curr.weaponLeft = deleteHelper(curr.weaponLeft, key);
+            if (key.name.CompareTo(curr.weapon.name) > 0) curr.weaponRight = deleteHelper(curr.weaponRight, key);
+
+            if(curr.weapon.name == key.name)
             {
-                curr.weaponLeft = deleteHelper(curr.weaponLeft, key);
-            }
-            else if (string.Compare(key.weapon.name.ToLower(), curr.weapon.name.ToLower()) > 0)
-            {
-                curr.weaponRight = deleteHelper(curr.weaponRight, key);
-            }
-            else
-            {
-                if(curr.weaponLeft == null)
+                if (curr.weaponLeft == null) return curr.weaponRight;
+                if (curr.weaponRight == null) return curr.weaponLeft;
+
+                BSTNode successor = curr.weaponRight;
+
+                while(successor.weaponLeft != null)
                 {
-                    return curr.weaponRight;
+                    successor = successor.weaponLeft;
                 }
-                else if (curr.weaponRight == null)
-                {
-                    return curr.weaponLeft;
-                }
-
-                BSTNode min = getMin(curr.weaponRight);
-
-                curr.weaponRight = deleteHelper(curr.weaponRight, min);
+                curr.weapon = successor.weapon;
+                curr.weaponRight = deleteHelper(curr.weaponRight, successor.weapon);
             }
             return curr;
         }
-
-        private BSTNode getMin(BSTNode curr)
-        {
-            while(curr.weaponLeft != null)
-            {
-                curr = curr.weaponLeft;
-            }
-            return curr;
-        }
+       
 
     }
 }

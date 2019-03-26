@@ -8,12 +8,10 @@ namespace WeaponShopAssign2
     {
         public Weapon weapon;
         public BSTNode weaponLeft, weaponRight;
-        public int quantity;
-
+        
         public BSTNode(Weapon weapon)
         {
             this.weapon = weapon;
-            quantity = 1;
             weaponLeft = null;
             weaponRight = null;
         }

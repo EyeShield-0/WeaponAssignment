@@ -24,6 +24,7 @@ namespace WeaponShopAssign2
             if (inventoryFull(weapon))
             {
                 backpack.addWeapon(weapon);
+                weapon.quantity--;
                 Console.WriteLine("\nSuccessfully bought the weapon {0} for {1} coins!!\n", weapon.name, weapon.cost);
             }
             else

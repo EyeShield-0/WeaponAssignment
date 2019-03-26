@@ -39,26 +39,21 @@ namespace WeaponShopAssign2
 
             shop.displayWeapons();
             string name = getStringInput("Enter the Weapon name that you would like to buy: ");
-            BSTNode w = shop.search(name);
-            if (w != null)
+            
+            if (shop.search(name) != null)
             {
-                Weapon weapon = w.weapon;
+                Weapon w = shop.search(name).weapon;
                 if (w.quantity > 0)
                 {
-                    w.quantity--;
-                    player.buyWeapon(w.weapon);
-                    player.money -= weapon.cost;
-                }
-                else
-                {
-                    Console.WriteLine("{0} is out of stock!", name);
+                    player.buyWeapon(w);
+                    player.money -= w.cost;
                 }
             }
             else
             {
                 Console.WriteLine("{0} does not exist in this shop!", name);
             }
-
+            
         }
 
         //method that adds weapon to the shop
@@ -74,7 +69,8 @@ namespace WeaponShopAssign2
                 int weaponDamage = getIntInput("Enter the weapon damage: ");
                 double weaponWeight = getDoubleInput("Enter the weapon weight: ");
                 double weaponCost = getDoubleInput("Enter the weapon price: ");
-                shop.addWeapon(weaponName, weaponRange, weaponDamage, weaponWeight, weaponCost);
+                int weaponQuantity = getIntInput("Enter the weapon quantity: ");
+                shop.addWeapon(weaponName, weaponRange, weaponDamage, weaponWeight, weaponCost, weaponQuantity);
                 Console.WriteLine("\nSuccessfully added the weapon to the shop!\n");
                 choice = getStringInput("Enter('end') to exit weapon addition menu: ");
             }
@@ -83,10 +79,10 @@ namespace WeaponShopAssign2
         //delete weapon from the shop
         static void deleteWeapon()
         {
-            Console.WriteLine("----- WEAPON DELETION -----/nWeapon List:\n");
+            Console.WriteLine("----- WEAPON DELETION -----\nWeapon List:\n");
             shop.displayWeapons();
             string name = getStringInput("Enter the name of the weapon you would like to delete: ");
-            shop.delete(name);
+            shop.deleteWeapon(name);
         }
 
         //starting menu
@@ -123,7 +119,7 @@ namespace WeaponShopAssign2
         static string getStringInput(string prompt)
         {
             Console.Write(prompt);
-            return Console.ReadLine();
+            return Console.ReadLine().ToLower();
         }
         
         //gets a choice from the user from 1-6
